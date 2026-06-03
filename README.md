@@ -48,17 +48,20 @@ flowchart TD
 3. Sistem murni menggunakan pustaka standar Python bawaan (*Standard Libraries*) seperti `socket`, `threading`, `json`, `struct`, dan `tkinter`. **Tidak perlu** menginstal pustaka pihak ketiga melalui `pip`.
 
 ## 5. Panduan Demo Presentasi
-Kami merekomendasikan skenario berikut saat presentasi:
+Kami merekomendasikan skenario berikut saat presentasi (bisa antar Laptop jika terhubung dalam 1 jaringan Wi-Fi/LAN):
 1. **Demo Unicast TCP Multithread:**
-   * Buka 3 Terminal. Terminal pertama eksekusi `python unicast/server_multi.py` (Atau `server_single.py` untuk menguji perbedaan Single-Thread).
-   * Terminal 2 dan 3 eksekusi `python unicast/client.py`.
-   * Tunjukkan pengiriman sebuah Teks dan sebuah File (`.jpg`) secara hampir bersamaan. Perlihatkan *progress bar* yang berjalan paralel.
-2. **Demo UDP Multicast:**
-   * Jalankan dua kali `python multicast/receiver.py`.
-   * Jalankan satu `python multicast/sender.py` lalu kirim file video `.mp4`. Tunjukkan bahwa 1x aksi kirim akan mendistribusikan file ke 2 *Receiver* sekaligus melalui teknik *Chunking*.
-3. **Demo GUI (Nilai Tambahan):**
+   * **Laptop 1:** Eksekusi `python unicast/server_multi.py` (Atau `server_single.py` untuk menguji perbedaan Single-Thread).
+   * **Laptop 2 & 3 (Atau Terminal Berbeda):** Eksekusi `python unicast/client.py` dan masukkan IP dari Laptop 1.
+   * Tunjukkan pengiriman sebuah Teks dan sebuah File (`.jpg`) secara hampir bersamaan. Perlihatkan *progress bar* yang berjalan paralel karena *multithreading*.
+2. **Demo UDP Multicast (Satu-ke-Banyak Grup):**
+   * **Laptop 2 & 3:** Jalankan `python multicast/receiver.py` (keduanya kini tergabung dalam grup `224.1.1.1`).
+   * **Laptop 1:** Jalankan `python multicast/sender.py` lalu kirim file video `.mp4`. Tunjukkan bahwa cukup 1x aksi kirim, file akan terdistribusi secara serentak ke Laptop 2 dan 3 sekaligus menggunakan algoritma pemotongan (*chunking*) & penyusunan (*pre-allocation*).
+3. **Demo UDP Broadcast (Satu-ke-Semua):**
+   * Mirip dengan Multicast, jalankan `python broadcast/receiver.py` di beberapa laptop (keduanya akan *stand-by* mendengarkan jaringan).
+   * **Laptop 1:** Jalankan `python broadcast/sender.py`. Kiriman ini bersifat menyiarkan ke satu subnet secara paksa (*flooding*), dan otomatis dibaca oleh receiver tanpa perlu mendaftar grup khusus.
+4. **Demo GUI (Nilai Tambahan):**
    * Buka `python gui/server_gui.py` klik Start. Buka `python gui/client_gui.py` klik Connect.
-   * Tunjukkan UI interaktif untuk *chatting* dan pilih file (*file picker*).
+   * Tunjukkan UI interaktif untuk *chatting* dan kemampuan memilih file melalui *file picker* OS bawaan.
 
 ## 6. Daftar Pertanyaan Dosen & Kunci Jawaban
 1. **Mengapa UDP perlu dipecah (*chunking*) saat mengirim file, sedangkan TCP tidak?**
