@@ -7,8 +7,12 @@ Dokumen ini memuat penjelasan mendetail (*code breakdown*) dari seluruh folder d
 ## 1. Folder `unicast/` (Tahap 1, 2, dan 3)
 Berisi implementasi dasar protokol TCP Unicast (1-ke-1) menggunakan arsitektur Client-Server.
 
-### `unicast/server.py`
-Ini adalah *Main Server* yang mendengarkan (*listen*) di port `8080`.
+### ├── unicast/
+│   ├── server_single.py
+│   ├── server_multi.py
+│   └── client.py
+
+Kedua file server ini adalah *Main Server* TCP yang mendengarkan (*listen*) di port `8080`. Sengaja dipisah agar Anda mudah mendemonstrasikan versi **Single Thread** (Tahap 1 & 2) dan **Multithread** (Tahap 3) ke Dosen.
 * **Arsitektur Jaringan:** Menggunakan koneksi TCP (`socket.SOCK_STREAM`) yang menjamin paket sampai secara utuh dan berurutan (*reliable*).
 * **Fitur Multithread (Tahap 3):** Kode tidak memblokir saat melayani satu *client*. Melainkan, pada fungsi `start_server()`, setiap kali fungsi `server_socket.accept()` mendapatkan *client* baru, server akan melahirkan *Thread* baru (`threading.Thread(target=handle_client)`) untuk menangani pengiriman dan penerimaan dari *client* tersebut.
 * **Fitur File Transfer (Tahap 2):** Kode menggunakan struktur pesan dengan *Custom JSON Header*. Sebelum mengirim data, *client* mengirim paket berisi ukuran panjang *header* (4 bytes), diikuti string *JSON header* (`{"type": "file", "filename": "x.jpg", "size": 1000}`). Server membaca ukuran ini dan melakukan iterasi iterasi `f.write(chunk)` ke dalam folder `received_files/` secara aman dari RAM.
