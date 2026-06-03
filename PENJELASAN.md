@@ -25,8 +25,14 @@ Berisi implementasi dasar protokol TCP Unicast (1-ke-1) menggunakan arsitektur C
 │   └── client.py
 
 Kedua file server ini adalah *Main Server* TCP yang mendengarkan (*listen*) di port `8080`. Sengaja dipisah agar Anda mudah mendemonstrasikan versi **Single Thread** (Tahap 1 & 2) dan **Multithread** (Tahap 3) ke Dosen.
+
+### Konsep Dasar & Skenario Uji Coba Lintas Laptop (Single vs Multi)
+Saat menguji coba dengan banyak laptop (misal: Laptop 1 sebagai Server, Laptop 2 & 3 sebagai Klien), Anda akan melihat perbedaan mencolok antara keduanya:
+* **Server Single Thread (`server_single.py`):** Hanya bisa melayani **satu klien pada satu waktu**. Jika Laptop 2 sedang mengirim file besar, Laptop 3 harus **menunggu** (*ngantre/blocking*) sampai pengiriman Laptop 2 selesai sebelum koneksinya diterima oleh server.
+* **Server Multithread (`server_multi.py`):** Bisa melayani **banyak klien sekaligus**. Jika Laptop 2 sedang mengirim file, Laptop 3 tetap bisa terhubung dan mengirim pesan/file di detik yang sama tanpa hambatan. Hal ini dicapai dengan melahirkan *Thread* baru (`threading.Thread(target=handle_client)`) untuk setiap *client* yang baru masuk dari fungsi `accept()`.
+
+### Fitur Lainnya
 * **Arsitektur Jaringan:** Menggunakan koneksi TCP (`socket.SOCK_STREAM`) yang menjamin paket sampai secara utuh dan berurutan (*reliable*).
-* **Fitur Multithread (Tahap 3):** Kode tidak memblokir saat melayani satu *client*. Melainkan, pada fungsi `start_server()`, setiap kali fungsi `server_socket.accept()` mendapatkan *client* baru, server akan melahirkan *Thread* baru (`threading.Thread(target=handle_client)`) untuk menangani pengiriman dan penerimaan dari *client* tersebut.
 * **Fitur File Transfer (Tahap 2):** Menggunakan struktur pesan dengan *Custom JSON Header*. Sebelum mengirim data, *client* mengirim paket berisi ukuran panjang *header* (4 bytes), diikuti string *JSON header* (`{"type": "file", "filename": "x.jpg", "size": 1000}`). Server membaca ukuran ini dan melakukan iterasi iterasi `f.write(chunk)` ke dalam folder `received_files/` secara aman dari RAM.
 
 ---
